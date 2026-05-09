@@ -38,7 +38,7 @@ subscription-tracker/
 
 ### Gereksinimler
 
-- Node.js (v18+)
+- Node.js  (v18+)
 - PostgreSQL (v14+)
 
 ### 1. Depoyu klonlayın
