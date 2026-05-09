@@ -84,6 +84,9 @@ const {
  *         estimatedMonthly:
  *           type: number
  *           example: 55.97
+ *         estimatedYearly:
+ *           type: number
+ *           example: 671.64
  *         activeCount:
  *           type: integer
  *           example: 5

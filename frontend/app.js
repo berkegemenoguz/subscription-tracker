@@ -4,8 +4,8 @@ let subscriptions = [];
 let editingId = null;
 
 const monthNames = [
-  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -30,9 +30,10 @@ async function loadSummary() {
   try {
     const res = await fetch(`${API_URL}/summary`);
     const data = await res.json();
-    document.getElementById('monthly-total').textContent = `₺${data.monthlyTotal.toFixed(2)}`;
-    document.getElementById('yearly-total').textContent = `₺${data.yearlyTotal.toFixed(2)}`;
-    document.getElementById('estimated-monthly').textContent = `₺${data.estimatedMonthly.toFixed(2)}`;
+    document.getElementById('monthly-total').textContent = `$${data.monthlyTotal.toFixed(2)}`;
+    document.getElementById('yearly-total').textContent = `$${data.yearlyTotal.toFixed(2)}`;
+    document.getElementById('estimated-monthly').textContent = `$${data.estimatedMonthly.toFixed(2)}`;
+    document.getElementById('estimated-yearly').textContent = `$${data.estimatedYearly.toFixed(2)}`;
   } catch (err) {
     console.error('Failed to load summary:', err);
   }
@@ -57,19 +58,19 @@ function renderTable() {
   for (const sub of subscriptions) {
     const tr = document.createElement('tr');
 
-    const cycleText = sub.cycle === 'monthly' ? 'Aylık' : 'Yıllık';
+    const cycleText = sub.cycle === 'monthly' ? 'Monthly' : 'Yearly';
     const statusClass = sub.status === 'active' ? 'status-active' : 'status-cancelled';
-    const statusText = sub.status === 'active' ? 'Aktif' : 'İptal';
+    const statusText = sub.status === 'active' ? 'Active' : 'Cancelled';
 
     tr.innerHTML = `
       <td>${escapeHtml(sub.name)}</td>
-      <td>₺${parseFloat(sub.price).toFixed(2)}</td>
+      <td>$${parseFloat(sub.price).toFixed(2)}</td>
       <td>${cycleText}</td>
       <td>${sub.start_date ? sub.start_date.substring(0, 10) : ''}</td>
       <td><span class="${statusClass}">${statusText}</span></td>
       <td>
-        <button class="action-btn edit-btn" data-id="${sub.id}">Düzenle</button>
-        <button class="action-btn delete-btn" data-id="${sub.id}">Sil</button>
+        <button class="action-btn edit-btn" data-id="${sub.id}">Edit</button>
+        <button class="action-btn delete-btn" data-id="${sub.id}">Delete</button>
       </td>
     `;
 
@@ -116,12 +117,12 @@ function renderCalendar() {
     card.className = 'calendar-month';
 
     const subsListHtml = monthSubs
-      .map(s => `<li>${escapeHtml(s.name)}: ₺${parseFloat(s.price).toFixed(2)}</li>`)
+      .map(s => `<li>${escapeHtml(s.name)}: $${parseFloat(s.price).toFixed(2)}</li>`)
       .join('');
 
     card.innerHTML = `
       <h3>${monthNames[month]} ${year}</h3>
-      <p class="month-total">₺${monthTotal.toFixed(2)}</p>
+      <p class="month-total">$${monthTotal.toFixed(2)}</p>
       <ul>${subsListHtml}</ul>
     `;
 
@@ -171,7 +172,7 @@ async function handleFormSubmit(e) {
     resetForm();
     await loadSubscriptions();
   } catch (err) {
-    showFormErrors(['Sunucu ile bağlantı kurulamadı.']);
+    showFormErrors(['Could not connect to the server.']);
   }
 }
 
@@ -188,15 +189,15 @@ function handleEdit(id) {
   document.getElementById('status').value = sub.status;
   document.getElementById('notes').value = sub.notes || '';
 
-  document.getElementById('form-title').textContent = 'Aboneliği Düzenle';
-  document.getElementById('submit-btn').textContent = 'Güncelle';
+  document.getElementById('form-title').textContent = 'Edit Subscription';
+  document.getElementById('submit-btn').textContent = 'Update';
   document.getElementById('cancel-btn').style.display = 'inline-block';
 
   document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
 }
 
 async function handleDelete(id) {
-  if (!confirm('Bu aboneliği silmek istediğinize emin misiniz?')) return;
+  if (!confirm('Are you sure you want to delete this subscription?')) return;
 
   try {
     const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
@@ -211,8 +212,8 @@ async function handleDelete(id) {
 function resetForm() {
   editingId = null;
   document.getElementById('subscription-form').reset();
-  document.getElementById('form-title').textContent = 'Yeni Abonelik Ekle';
-  document.getElementById('submit-btn').textContent = 'Ekle';
+  document.getElementById('form-title').textContent = 'Add New Subscription';
+  document.getElementById('submit-btn').textContent = 'Add';
   document.getElementById('cancel-btn').style.display = 'none';
   clearFormErrors();
 }
@@ -231,16 +232,16 @@ function getFormData() {
 function validateForm(data) {
   const errors = [];
 
-  if (!data.name || data.name.length === 0) errors.push('Ad alanı zorunludur.');
-  if (data.name && data.name.length > 100) errors.push('Ad en fazla 100 karakter olabilir.');
+  if (!data.name || data.name.length === 0) errors.push('Name is required.');
+  if (data.name && data.name.length > 100) errors.push('Name must be 100 characters or fewer.');
 
-  if (!data.price || isNaN(data.price) || data.price <= 0) errors.push('Fiyat pozitif bir sayı olmalıdır.');
+  if (!data.price || isNaN(data.price) || data.price <= 0) errors.push('Price must be a positive number.');
 
-  if (!['monthly', 'yearly'].includes(data.cycle)) errors.push('Döngü aylık veya yıllık olmalıdır.');
+  if (!['monthly', 'yearly'].includes(data.cycle)) errors.push('Cycle must be monthly or yearly.');
 
-  if (!data.start_date) errors.push('Başlangıç tarihi zorunludur.');
+  if (!data.start_date) errors.push('Start date is required.');
 
-  if (data.status && !['active', 'cancelled'].includes(data.status)) errors.push('Durum aktif veya iptal olmalıdır.');
+  if (data.status && !['active', 'cancelled'].includes(data.status)) errors.push('Status must be active or cancelled.');
 
   return errors;
 }

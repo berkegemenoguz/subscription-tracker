@@ -1,91 +1,95 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Abonelik Takip Yöneticisi</title>
+  <title>Subscription Tracker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Abonelik Takip Yöneticisi</h1>
+    <h1>Subscription Tracker</h1>
   </header>
 
   <main>
     <section id="summary-section">
       <div class="summary-card">
-        <h3>Aylık Toplam</h3>
-        <p id="monthly-total">₺0.00</p>
+        <h3>Monthly Total</h3>
+        <p id="monthly-total">$0.00</p>
       </div>
       <div class="summary-card">
-        <h3>Yıllık Toplam</h3>
-        <p id="yearly-total">₺0.00</p>
+        <h3>Yearly Total</h3>
+        <p id="yearly-total">$0.00</p>
       </div>
       <div class="summary-card">
-        <h3>Tahmini Aylık</h3>
-        <p id="estimated-monthly">₺0.00</p>
+        <h3>Estimated Monthly</h3>
+        <p id="estimated-monthly">$0.00</p>
+      </div>
+      <div class="summary-card">
+        <h3>Estimated Yearly</h3>
+        <p id="estimated-yearly">$0.00</p>
       </div>
     </section>
 
     <section id="form-section">
-      <h2 id="form-title">Yeni Abonelik Ekle</h2>
+      <h2 id="form-title">Add New Subscription</h2>
       <div id="form-errors"></div>
       <form id="subscription-form">
         <div class="form-row">
           <div class="form-group">
-            <label for="name">Ad</label>
-            <input type="text" id="name" name="name" placeholder="Örn: Netflix" required>
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="e.g. Netflix" required>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="price">Fiyat</label>
+            <label for="price">Price</label>
             <input type="number" id="price" name="price" step="0.01" min="0.01" placeholder="0.00" required>
           </div>
           <div class="form-group">
-            <label for="cycle">Döngü</label>
+            <label for="cycle">Cycle</label>
             <select id="cycle" name="cycle" required>
-              <option value="monthly">Aylık</option>
-              <option value="yearly">Yıllık</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
             </select>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label for="start_date">Başlangıç Tarihi</label>
+            <label for="start_date">Start Date</label>
             <input type="date" id="start_date" name="start_date" required>
           </div>
           <div class="form-group">
-            <label for="status">Durum</label>
+            <label for="status">Status</label>
             <select id="status" name="status">
-              <option value="active">Aktif</option>
-              <option value="cancelled">İptal</option>
+              <option value="active">Active</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
         </div>
         <div class="form-group full-width">
-          <label for="notes">Notlar</label>
-          <textarea id="notes" name="notes" rows="2" placeholder="İsteğe bağlı notlar..."></textarea>
+          <label for="notes">Notes</label>
+          <textarea id="notes" name="notes" rows="2" placeholder="Optional notes..."></textarea>
         </div>
         <div class="form-actions">
-          <button type="submit" id="submit-btn">Ekle</button>
-          <button type="button" id="cancel-btn" style="display:none;">İptal</button>
+          <button type="submit" id="submit-btn">Add</button>
+          <button type="button" id="cancel-btn" style="display:none;">Cancel</button>
         </div>
       </form>
     </section>
 
     <section id="list-section">
-      <h2>Abonelikler</h2>
-      <div id="empty-message" style="display:none;">Henüz abonelik eklenmemiş.</div>
+      <h2>Subscriptions</h2>
+      <div id="empty-message" style="display:none;">No subscriptions added yet.</div>
       <table id="subscriptions-table" style="display:none;">
         <thead>
           <tr>
-            <th>Ad</th>
-            <th>Fiyat</th>
-            <th>Döngü</th>
-            <th>Başlangıç</th>
-            <th>Durum</th>
-            <th>İşlemler</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Cycle</th>
+            <th>Start Date</th>
+            <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody id="subscriptions-body"></tbody>
@@ -93,7 +97,7 @@
     </section>
 
     <section id="calendar-section">
-      <h2>12 Aylık Harcama Takvimi</h2>
+      <h2>12-Month Spending Calendar</h2>
       <div id="calendar-grid"></div>
     </section>
   </main>

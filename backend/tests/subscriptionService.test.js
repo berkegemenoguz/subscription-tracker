@@ -129,6 +129,7 @@ describe('getSummary', () => {
     expect(result.monthlyTotal).toBe(25.98);
     expect(result.yearlyTotal).toBe(120.00);
     expect(result.estimatedMonthly).toBe(35.98);
+    expect(result.estimatedYearly).toBe(431.76);
     expect(result.activeCount).toBe(3);
   });
 
@@ -140,6 +141,7 @@ describe('getSummary', () => {
     expect(result.monthlyTotal).toBe(0);
     expect(result.yearlyTotal).toBe(0);
     expect(result.estimatedMonthly).toBe(0);
+    expect(result.estimatedYearly).toBe(0);
     expect(result.activeCount).toBe(0);
   });
 
@@ -154,6 +156,7 @@ describe('getSummary', () => {
 
     expect(result.monthlyTotal).toBe(0);
     expect(result.yearlyTotal).toBe(0);
+    expect(result.estimatedYearly).toBe(0);
     expect(result.activeCount).toBe(0);
   });
 });

@@ -54,10 +54,14 @@ const getSummary = async () => {
     }
   }
 
+  const estimatedMonthly = monthlyTotal + yearlyTotal / 12;
+  const estimatedYearly = monthlyTotal * 12 + yearlyTotal;
+
   return {
     monthlyTotal: parseFloat(monthlyTotal.toFixed(2)),
     yearlyTotal: parseFloat(yearlyTotal.toFixed(2)),
-    estimatedMonthly: parseFloat((monthlyTotal + yearlyTotal / 12).toFixed(2)),
+    estimatedMonthly: parseFloat(estimatedMonthly.toFixed(2)),
+    estimatedYearly: parseFloat(estimatedYearly.toFixed(2)),
     activeCount: active.length,
   };
 };
