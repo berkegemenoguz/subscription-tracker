@@ -1,7 +1,6 @@
 CREATE TABLE IF NOT EXISTS subscriptions (
   id         SERIAL PRIMARY KEY,
   name       VARCHAR(100)  NOT NULL,
-  category   VARCHAR(50)   NOT NULL,
   price      DECIMAL(10,2) NOT NULL,
   cycle      VARCHAR(10)   NOT NULL CHECK (cycle IN ('monthly', 'yearly')),
   start_date DATE          NOT NULL,

@@ -15,12 +15,12 @@ const findById = async (id) => {
   return result.rows[0];
 };
 
-const create = async ({ name, category, price, cycle, start_date, status, notes }) => {
+const create = async ({ name, price, cycle, start_date, status, notes }) => {
   const result = await pool.query(
-    `INSERT INTO subscriptions (name, category, price, cycle, start_date, status, notes)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO subscriptions (name, price, cycle, start_date, status, notes)
+     VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING *`,
-    [name, category, price, cycle, start_date, status || 'active', notes || null]
+    [name, price, cycle, start_date, status || 'active', notes || null]
   );
   return result.rows[0];
 };

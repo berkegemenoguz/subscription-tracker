@@ -11,8 +11,8 @@ afterEach(() => {
 describe('getAllSubscriptions', () => {
   it('should return all subscriptions', async () => {
     const mockData = [
-      { id: 1, name: 'Netflix', category: 'Entertainment', price: '15.99', cycle: 'monthly', status: 'active' },
-      { id: 2, name: 'Spotify', category: 'Music', price: '9.99', cycle: 'monthly', status: 'active' },
+      { id: 1, name: 'Netflix', price: '15.99', cycle: 'monthly', status: 'active' },
+      { id: 2, name: 'Spotify', price: '9.99', cycle: 'monthly', status: 'active' },
     ];
     subscriptionModel.findAll.mockResolvedValue(mockData);
 
@@ -56,7 +56,6 @@ describe('createSubscription', () => {
   it('should create and return new subscription', async () => {
     const input = {
       name: 'Netflix',
-      category: 'Entertainment',
       price: 15.99,
       cycle: 'monthly',
       start_date: '2024-01-15',

@@ -1,17 +1,11 @@
 const validateCreateSubscription = (req, res, next) => {
   const errors = [];
-  const { name, category, price, cycle, start_date, status } = req.body;
+  const { name, price, cycle, start_date, status } = req.body;
 
   if (!name || typeof name !== 'string' || name.trim().length === 0) {
     errors.push('name is required');
   } else if (name.length > 100) {
     errors.push('name must be 100 characters or fewer');
-  }
-
-  if (!category || typeof category !== 'string' || category.trim().length === 0) {
-    errors.push('category is required');
-  } else if (category.length > 50) {
-    errors.push('category must be 50 characters or fewer');
   }
 
   if (price === undefined || price === null || price === '') {
@@ -49,21 +43,13 @@ const validateCreateSubscription = (req, res, next) => {
 
 const validateUpdateSubscription = (req, res, next) => {
   const errors = [];
-  const { name, category, price, cycle, start_date, status } = req.body;
+  const { name, price, cycle, start_date, status } = req.body;
 
   if (name !== undefined) {
     if (typeof name !== 'string' || name.trim().length === 0) {
       errors.push('name must be a non-empty string');
     } else if (name.length > 100) {
       errors.push('name must be 100 characters or fewer');
-    }
-  }
-
-  if (category !== undefined) {
-    if (typeof category !== 'string' || category.trim().length === 0) {
-      errors.push('category must be a non-empty string');
-    } else if (category.length > 50) {
-      errors.push('category must be 50 characters or fewer');
     }
   }
 

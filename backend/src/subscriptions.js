@@ -20,9 +20,6 @@ const {
  *         name:
  *           type: string
  *           example: Netflix
- *         category:
- *           type: string
- *           example: Entertainment
  *         price:
  *           type: number
  *           format: float
@@ -49,7 +46,6 @@ const {
  *       type: object
  *       required:
  *         - name
- *         - category
  *         - price
  *         - cycle
  *         - start_date
@@ -57,9 +53,6 @@ const {
  *         name:
  *           type: string
  *           example: Netflix
- *         category:
- *           type: string
- *           example: Entertainment
  *         price:
  *           type: number
  *           format: float

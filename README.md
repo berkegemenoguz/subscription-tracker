@@ -118,7 +118,6 @@ curl -X POST http://localhost:3000/api/subscriptions \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Netflix",
-    "category": "Eğlence",
     "price": 99.99,
     "cycle": "monthly",
     "start_date": "2024-01-15",
@@ -132,7 +131,6 @@ curl -X POST http://localhost:3000/api/subscriptions \
 {
   "id": 1,
   "name": "Netflix",
-  "category": "Eğlence",
   "price": "99.99",
   "cycle": "monthly",
   "start_date": "2024-01-15",

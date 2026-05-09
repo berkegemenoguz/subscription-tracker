@@ -63,7 +63,6 @@ function renderTable() {
 
     tr.innerHTML = `
       <td>${escapeHtml(sub.name)}</td>
-      <td>${escapeHtml(sub.category)}</td>
       <td>₺${parseFloat(sub.price).toFixed(2)}</td>
       <td>${cycleText}</td>
       <td>${sub.start_date ? sub.start_date.substring(0, 10) : ''}</td>
@@ -183,7 +182,6 @@ function handleEdit(id) {
   editingId = id;
 
   document.getElementById('name').value = sub.name;
-  document.getElementById('category').value = sub.category;
   document.getElementById('price').value = parseFloat(sub.price);
   document.getElementById('cycle').value = sub.cycle;
   document.getElementById('start_date').value = sub.start_date ? sub.start_date.substring(0, 10) : '';
@@ -222,7 +220,6 @@ function resetForm() {
 function getFormData() {
   return {
     name: document.getElementById('name').value.trim(),
-    category: document.getElementById('category').value.trim(),
     price: parseFloat(document.getElementById('price').value),
     cycle: document.getElementById('cycle').value,
     start_date: document.getElementById('start_date').value,
@@ -236,9 +233,6 @@ function validateForm(data) {
 
   if (!data.name || data.name.length === 0) errors.push('Ad alanı zorunludur.');
   if (data.name && data.name.length > 100) errors.push('Ad en fazla 100 karakter olabilir.');
-
-  if (!data.category || data.category.length === 0) errors.push('Kategori alanı zorunludur.');
-  if (data.category && data.category.length > 50) errors.push('Kategori en fazla 50 karakter olabilir.');
 
   if (!data.price || isNaN(data.price) || data.price <= 0) errors.push('Fiyat pozitif bir sayı olmalıdır.');
 
