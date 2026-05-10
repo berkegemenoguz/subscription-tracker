@@ -1,4 +1,4 @@
-# Abonelik Takip Yöneticisi
+# Abonelik Takip Yöneticisi 
 
 Kişisel aboneliklerinizi takip etmenizi sağlayan full-stack web uygulaması. Aylık ve yıllık aboneliklerinizi ekleyin, düzenleyin, silin ve harcama özetinizi görüntüleyin.
 
