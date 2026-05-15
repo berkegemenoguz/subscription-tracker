@@ -2,7 +2,10 @@ const pool = require('./database');
 
 const findAll = async () => {
   const result = await pool.query(
-    'SELECT * FROM subscriptions ORDER BY created_at DESC'
+    `SELECT s.*, pc.name AS card_name
+     FROM subscriptions s
+     LEFT JOIN payment_cards pc ON s.card_id = pc.id
+     ORDER BY s.created_at DESC`
   );
   return result.rows;
 };
@@ -15,12 +18,12 @@ const findById = async (id) => {
   return result.rows[0];
 };
 
-const create = async ({ name, price, cycle, start_date, status, notes }) => {
+const create = async ({ name, price, cycle, start_date, status, notes, card_id }) => {
   const result = await pool.query(
-    `INSERT INTO subscriptions (name, price, cycle, start_date, status, notes)
-     VALUES ($1, $2, $3, $4, $5, $6)
+    `INSERT INTO subscriptions (name, price, cycle, start_date, status, notes, card_id)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
      RETURNING *`,
-    [name, price, cycle, start_date, status || 'active', notes || null]
+    [name, price, cycle, start_date, status || 'active', notes || null, card_id || null]
   );
   return result.rows[0];
 };

@@ -1,6 +1,8 @@
 const API_URL = '/api/subscriptions';
+const CARDS_API_URL = '/api/payment-cards';
 
 let subscriptions = [];
+let cards = [];
 let editingId = null;
 
 const monthNames = [
@@ -11,6 +13,8 @@ const monthNames = [
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('subscription-form').addEventListener('submit', handleFormSubmit);
   document.getElementById('cancel-btn').addEventListener('click', resetForm);
+  document.getElementById('add-card-btn').addEventListener('click', handleAddCard);
+  loadCards();
   loadSubscriptions();
 });
 
@@ -68,6 +72,7 @@ function renderTable() {
       <td>${cycleText}</td>
       <td>${sub.start_date ? sub.start_date.substring(0, 10) : ''}</td>
       <td><span class="${statusClass}">${statusText}</span></td>
+      <td>${sub.card_name ? escapeHtml(sub.card_name) : '-'}</td>
       <td>
         <button class="action-btn edit-btn" data-id="${sub.id}">Edit</button>
         <button class="action-btn delete-btn" data-id="${sub.id}">Delete</button>
@@ -188,6 +193,7 @@ function handleEdit(id) {
   document.getElementById('start_date').value = sub.start_date ? sub.start_date.substring(0, 10) : '';
   document.getElementById('status').value = sub.status;
   document.getElementById('notes').value = sub.notes || '';
+  document.getElementById('card_id').value = sub.card_id || '';
 
   document.getElementById('form-title').textContent = 'Edit Subscription';
   document.getElementById('submit-btn').textContent = 'Update';
@@ -212,13 +218,14 @@ async function handleDelete(id) {
 function resetForm() {
   editingId = null;
   document.getElementById('subscription-form').reset();
-  document.getElementById('form-title').textContent = 'Add New Subscription';
+  document.getElementById('form-title').textContent = 'Add Subscriptions';
   document.getElementById('submit-btn').textContent = 'Add';
   document.getElementById('cancel-btn').style.display = 'none';
   clearFormErrors();
 }
 
 function getFormData() {
+  const cardVal = document.getElementById('card_id').value;
   return {
     name: document.getElementById('name').value.trim(),
     price: parseFloat(document.getElementById('price').value),
@@ -226,6 +233,7 @@ function getFormData() {
     start_date: document.getElementById('start_date').value,
     status: document.getElementById('status').value,
     notes: document.getElementById('notes').value.trim() || null,
+    card_id: cardVal ? parseInt(cardVal, 10) : null,
   };
 }
 
@@ -233,9 +241,9 @@ function validateForm(data) {
   const errors = [];
 
   if (!data.name || data.name.length === 0) errors.push('Name is required.');
-  if (data.name && data.name.length > 100) errors.push('Name must be 100 characters or fewer.');
+  if (data.name && data.name.length > 50) errors.push('Name must be 50 characters or fewer.');
 
-  if (!data.price || isNaN(data.price) || data.price <= 0) errors.push('Price must be a positive number.');
+  if (!data.price || isNaN(data.price) || data.price <= 0) errors.push('You wish that number is what you are paying.');
 
   if (!['monthly', 'yearly'].includes(data.cycle)) errors.push('Cycle must be monthly or yearly.');
 
@@ -253,6 +261,50 @@ function showFormErrors(errors) {
 
 function clearFormErrors() {
   document.getElementById('form-errors').innerHTML = '';
+}
+
+async function loadCards() {
+  try {
+    const res = await fetch(CARDS_API_URL);
+    cards = await res.json();
+    populateCardDropdown();
+  } catch (err) {
+    console.error('Failed to load cards:', err);
+  }
+}
+
+function populateCardDropdown() {
+  const select = document.getElementById('card_id');
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">-- No Card --</option>';
+  for (const card of cards) {
+    const opt = document.createElement('option');
+    opt.value = card.id;
+    opt.textContent = card.name;
+    select.appendChild(opt);
+  }
+  select.value = currentVal;
+}
+
+async function handleAddCard() {
+  const name = prompt('Enter card name:');
+  if (!name || name.trim().length === 0) return;
+
+  try {
+    const res = await fetch(CARDS_API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: name.trim() }),
+    });
+    if (res.ok) {
+      await loadCards();
+    } else {
+      const data = await res.json();
+      alert(data.errors ? data.errors.join(', ') : 'Failed to add card');
+    }
+  } catch (err) {
+    alert('Could not connect to the server.');
+  }
 }
 
 function escapeHtml(text) {

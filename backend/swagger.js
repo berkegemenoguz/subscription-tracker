@@ -15,7 +15,7 @@ const options = {
       },
     ],
   },
-  apis: ['./src/subscriptions.js'],
+  apis: ['./src/subscriptions.js', './src/paymentCards.js'],
 };
 
 module.exports = swaggerJsdoc(options);

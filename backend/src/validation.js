@@ -91,8 +91,20 @@ const validateId = (req, res, next) => {
   next();
 };
 
+const validateCreateCard = (body) => {
+  const errors = [];
+  const { name } = body;
+  if (!name || typeof name !== 'string' || name.trim().length === 0) {
+    errors.push('name is required');
+  } else if (name.length > 100) {
+    errors.push('name must be 100 characters or fewer');
+  }
+  return errors;
+};
+
 module.exports = {
   validateCreateSubscription,
   validateUpdateSubscription,
   validateId,
+  validateCreateCard,
 };

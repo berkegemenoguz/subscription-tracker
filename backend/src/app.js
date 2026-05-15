@@ -4,6 +4,7 @@ const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('../swagger');
 const subscriptionRoutes = require('./subscriptions');
+const paymentCardRoutes = require('./paymentCards');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../../frontend')));
 
 app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/payment-cards', paymentCardRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -124,6 +124,31 @@ main {
   border-color: #1a73e8;
 }
 
+.card-select-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.card-select-row select {
+  flex: 1;
+}
+
+#add-card-btn {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #1a73e8;
+  border-radius: 6px;
+  background: #e3f2fd;
+  color: #1a73e8;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#add-card-btn:hover {
+  background: #bbdefb;
+}
+
 .form-actions {
   display: flex;
   gap: 0.8rem;

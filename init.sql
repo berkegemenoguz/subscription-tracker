@@ -1,3 +1,9 @@
+CREATE TABLE IF NOT EXISTS payment_cards (
+  id         SERIAL PRIMARY KEY,
+  name       VARCHAR(100) NOT NULL,
+  created_at TIMESTAMP    DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS subscriptions (
   id         SERIAL PRIMARY KEY,
   name       VARCHAR(100)  NOT NULL,
@@ -6,5 +12,6 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   start_date DATE          NOT NULL,
   status     VARCHAR(10)   DEFAULT 'active' CHECK (status IN ('active', 'cancelled')),
   notes      TEXT,
+  card_id    INTEGER       REFERENCES payment_cards(id),
   created_at TIMESTAMP     DEFAULT NOW()
 );
