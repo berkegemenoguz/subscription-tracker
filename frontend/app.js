@@ -10,17 +10,58 @@ const monthNames = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+function requireAuth() {
+  if (!getToken()) {
+    window.location.href = '/auth.html';
+  }
+}
+
+async function apiFetch(url, options = {}) {
+  options.headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${getToken()}`,
+    ...options.headers,
+  };
+  const res = await fetch(url, options);
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/auth.html';
+    return;
+  }
+  return res;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  requireAuth();
+
+  const userInfo = localStorage.getItem('user');
+  if (userInfo) {
+    const user = JSON.parse(userInfo);
+    document.getElementById('user-email').textContent = user.email;
+  }
+
   document.getElementById('subscription-form').addEventListener('submit', handleFormSubmit);
   document.getElementById('cancel-btn').addEventListener('click', resetForm);
   document.getElementById('add-card-btn').addEventListener('click', handleAddCard);
+  document.getElementById('logout-btn').addEventListener('click', () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/auth.html';
+  });
+
   loadCards();
   loadSubscriptions();
 });
 
 async function loadSubscriptions() {
   try {
-    const res = await fetch(API_URL);
+    const res = await apiFetch(API_URL);
+    if (!res) return;
     subscriptions = await res.json();
     renderTable();
     renderCalendar();
@@ -32,7 +73,8 @@ async function loadSubscriptions() {
 
 async function loadSummary() {
   try {
-    const res = await fetch(`${API_URL}/summary`);
+    const res = await apiFetch(`${API_URL}/summary`);
+    if (!res) return;
     const data = await res.json();
     document.getElementById('monthly-total').textContent = `$${data.monthlyTotal.toFixed(2)}`;
     document.getElementById('yearly-total').textContent = `$${data.yearlyTotal.toFixed(2)}`;
@@ -151,18 +193,18 @@ async function handleFormSubmit(e) {
   try {
     let res;
     if (editingId) {
-      res = await fetch(`${API_URL}/${editingId}`, {
+      res = await apiFetch(`${API_URL}/${editingId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
     } else {
-      res = await fetch(API_URL, {
+      res = await apiFetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
     }
+
+    if (!res) return;
 
     if (!res.ok) {
       const data = await res.json();
@@ -206,8 +248,8 @@ async function handleDelete(id) {
   if (!confirm('Are you sure you want to delete this subscription?')) return;
 
   try {
-    const res = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    if (res.ok) {
+    const res = await apiFetch(`${API_URL}/${id}`, { method: 'DELETE' });
+    if (res && res.ok) {
       await loadSubscriptions();
     }
   } catch (err) {
@@ -265,7 +307,8 @@ function clearFormErrors() {
 
 async function loadCards() {
   try {
-    const res = await fetch(CARDS_API_URL);
+    const res = await apiFetch(CARDS_API_URL);
+    if (!res) return;
     cards = await res.json();
     populateCardDropdown();
   } catch (err) {
@@ -291,14 +334,13 @@ async function handleAddCard() {
   if (!name || name.trim().length === 0) return;
 
   try {
-    const res = await fetch(CARDS_API_URL, {
+    const res = await apiFetch(CARDS_API_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.trim() }),
     });
-    if (res.ok) {
+    if (res && res.ok) {
       await loadCards();
-    } else {
+    } else if (res) {
       const data = await res.json();
       alert(data.errors ? data.errors.join(', ') : 'Failed to add card');
     }

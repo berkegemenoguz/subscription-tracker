@@ -4,28 +4,30 @@ const subscriptionModel = require('../src/subscriptionModel');
 const subscriptionService = require('../src/subscriptionService');
 const { AppError } = require('../src/subscriptionService');
 
+const TEST_USER_ID = 1;
+
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('getAllSubscriptions', () => {
-  it('should return all subscriptions', async () => {
+  it('should return all subscriptions for user', async () => {
     const mockData = [
       { id: 1, name: 'Netflix', price: '15.99', cycle: 'monthly', status: 'active' },
       { id: 2, name: 'Spotify', price: '9.99', cycle: 'monthly', status: 'active' },
     ];
     subscriptionModel.findAll.mockResolvedValue(mockData);
 
-    const result = await subscriptionService.getAllSubscriptions();
+    const result = await subscriptionService.getAllSubscriptions(TEST_USER_ID);
 
     expect(result).toEqual(mockData);
-    expect(subscriptionModel.findAll).toHaveBeenCalledTimes(1);
+    expect(subscriptionModel.findAll).toHaveBeenCalledWith(TEST_USER_ID);
   });
 
   it('should return empty array when no subscriptions exist', async () => {
     subscriptionModel.findAll.mockResolvedValue([]);
 
-    const result = await subscriptionService.getAllSubscriptions();
+    const result = await subscriptionService.getAllSubscriptions(TEST_USER_ID);
 
     expect(result).toEqual([]);
   });
@@ -36,18 +38,18 @@ describe('getSubscriptionById', () => {
     const mockSub = { id: 1, name: 'Netflix', price: '15.99' };
     subscriptionModel.findById.mockResolvedValue(mockSub);
 
-    const result = await subscriptionService.getSubscriptionById(1);
+    const result = await subscriptionService.getSubscriptionById(1, TEST_USER_ID);
 
     expect(result).toEqual(mockSub);
-    expect(subscriptionModel.findById).toHaveBeenCalledWith(1);
+    expect(subscriptionModel.findById).toHaveBeenCalledWith(1, TEST_USER_ID);
   });
 
   it('should throw 404 when subscription not found', async () => {
     subscriptionModel.findById.mockResolvedValue(undefined);
 
-    await expect(subscriptionService.getSubscriptionById(999))
+    await expect(subscriptionService.getSubscriptionById(999, TEST_USER_ID))
       .rejects.toThrow(AppError);
-    await expect(subscriptionService.getSubscriptionById(999))
+    await expect(subscriptionService.getSubscriptionById(999, TEST_USER_ID))
       .rejects.toThrow('Subscription not found');
   });
 });
@@ -60,13 +62,13 @@ describe('createSubscription', () => {
       cycle: 'monthly',
       start_date: '2024-01-15',
     };
-    const mockCreated = { id: 1, ...input, status: 'active', notes: null };
+    const mockCreated = { id: 1, ...input, status: 'active', notes: null, user_id: TEST_USER_ID };
     subscriptionModel.create.mockResolvedValue(mockCreated);
 
-    const result = await subscriptionService.createSubscription(input);
+    const result = await subscriptionService.createSubscription(TEST_USER_ID, input);
 
     expect(result).toEqual(mockCreated);
-    expect(subscriptionModel.create).toHaveBeenCalledWith(input);
+    expect(subscriptionModel.create).toHaveBeenCalledWith({ ...input, user_id: TEST_USER_ID });
   });
 });
 
@@ -79,19 +81,19 @@ describe('updateSubscription', () => {
     subscriptionModel.findById.mockResolvedValue(existing);
     subscriptionModel.update.mockResolvedValue(updated);
 
-    const result = await subscriptionService.updateSubscription(1, updateData);
+    const result = await subscriptionService.updateSubscription(1, TEST_USER_ID, updateData);
 
     expect(result).toEqual(updated);
-    expect(subscriptionModel.findById).toHaveBeenCalledWith(1);
-    expect(subscriptionModel.update).toHaveBeenCalledWith(1, updateData);
+    expect(subscriptionModel.findById).toHaveBeenCalledWith(1, TEST_USER_ID);
+    expect(subscriptionModel.update).toHaveBeenCalledWith(1, TEST_USER_ID, updateData);
   });
 
   it('should throw 404 when subscription not found', async () => {
     subscriptionModel.findById.mockResolvedValue(undefined);
 
-    await expect(subscriptionService.updateSubscription(999, { price: 10 }))
+    await expect(subscriptionService.updateSubscription(999, TEST_USER_ID, { price: 10 }))
       .rejects.toThrow(AppError);
-    await expect(subscriptionService.updateSubscription(999, { price: 10 }))
+    await expect(subscriptionService.updateSubscription(999, TEST_USER_ID, { price: 10 }))
       .rejects.toThrow('Subscription not found');
   });
 });
@@ -100,16 +102,16 @@ describe('deleteSubscription', () => {
   it('should delete subscription when found', async () => {
     subscriptionModel.remove.mockResolvedValue(1);
 
-    await expect(subscriptionService.deleteSubscription(1)).resolves.toBeUndefined();
-    expect(subscriptionModel.remove).toHaveBeenCalledWith(1);
+    await expect(subscriptionService.deleteSubscription(1, TEST_USER_ID)).resolves.toBeUndefined();
+    expect(subscriptionModel.remove).toHaveBeenCalledWith(1, TEST_USER_ID);
   });
 
   it('should throw 404 when subscription not found', async () => {
     subscriptionModel.remove.mockResolvedValue(0);
 
-    await expect(subscriptionService.deleteSubscription(999))
+    await expect(subscriptionService.deleteSubscription(999, TEST_USER_ID))
       .rejects.toThrow(AppError);
-    await expect(subscriptionService.deleteSubscription(999))
+    await expect(subscriptionService.deleteSubscription(999, TEST_USER_ID))
       .rejects.toThrow('Subscription not found');
   });
 });
@@ -124,19 +126,20 @@ describe('getSummary', () => {
     ];
     subscriptionModel.findAll.mockResolvedValue(mockData);
 
-    const result = await subscriptionService.getSummary();
+    const result = await subscriptionService.getSummary(TEST_USER_ID);
 
     expect(result.monthlyTotal).toBe(25.98);
     expect(result.yearlyTotal).toBe(120.00);
     expect(result.estimatedMonthly).toBe(35.98);
     expect(result.estimatedYearly).toBe(431.76);
     expect(result.activeCount).toBe(3);
+    expect(subscriptionModel.findAll).toHaveBeenCalledWith(TEST_USER_ID);
   });
 
   it('should return zeros when no active subscriptions', async () => {
     subscriptionModel.findAll.mockResolvedValue([]);
 
-    const result = await subscriptionService.getSummary();
+    const result = await subscriptionService.getSummary(TEST_USER_ID);
 
     expect(result.monthlyTotal).toBe(0);
     expect(result.yearlyTotal).toBe(0);
@@ -152,7 +155,7 @@ describe('getSummary', () => {
     ];
     subscriptionModel.findAll.mockResolvedValue(mockData);
 
-    const result = await subscriptionService.getSummary();
+    const result = await subscriptionService.getSummary(TEST_USER_ID);
 
     expect(result.monthlyTotal).toBe(0);
     expect(result.yearlyTotal).toBe(0);

@@ -108,7 +108,7 @@ const {
  */
 router.get('/summary', async (req, res, next) => {
   try {
-    const summary = await subscriptionService.getSummary();
+    const summary = await subscriptionService.getSummary(req.userId);
     res.json(summary);
   } catch (err) {
     next(err);
@@ -133,7 +133,7 @@ router.get('/summary', async (req, res, next) => {
  */
 router.get('/', async (req, res, next) => {
   try {
-    const subscriptions = await subscriptionService.getAllSubscriptions();
+    const subscriptions = await subscriptionService.getAllSubscriptions(req.userId);
     res.json(subscriptions);
   } catch (err) {
     next(err);
@@ -164,7 +164,7 @@ router.get('/', async (req, res, next) => {
  */
 router.get('/:id', validateId, async (req, res, next) => {
   try {
-    const subscription = await subscriptionService.getSubscriptionById(req.params.id);
+    const subscription = await subscriptionService.getSubscriptionById(req.params.id, req.userId);
     res.json(subscription);
   } catch (err) {
     next(err);
@@ -195,7 +195,7 @@ router.get('/:id', validateId, async (req, res, next) => {
  */
 router.post('/', validateCreateSubscription, async (req, res, next) => {
   try {
-    const subscription = await subscriptionService.createSubscription(req.body);
+    const subscription = await subscriptionService.createSubscription(req.userId, req.body);
     res.status(201).json(subscription);
   } catch (err) {
     next(err);
@@ -234,7 +234,7 @@ router.post('/', validateCreateSubscription, async (req, res, next) => {
  */
 router.put('/:id', validateId, validateUpdateSubscription, async (req, res, next) => {
   try {
-    const subscription = await subscriptionService.updateSubscription(req.params.id, req.body);
+    const subscription = await subscriptionService.updateSubscription(req.params.id, req.userId, req.body);
     res.json(subscription);
   } catch (err) {
     next(err);
@@ -261,7 +261,7 @@ router.put('/:id', validateId, validateUpdateSubscription, async (req, res, next
  */
 router.delete('/:id', validateId, async (req, res, next) => {
   try {
-    await subscriptionService.deleteSubscription(req.params.id);
+    await subscriptionService.deleteSubscription(req.params.id, req.userId);
     res.status(204).send();
   } catch (err) {
     next(err);

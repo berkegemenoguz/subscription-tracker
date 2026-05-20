@@ -3,6 +3,8 @@ const cors = require('cors');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('../swagger');
+const authRoutes = require('./auth');
+const authMiddleware = require('./authMiddleware');
 const subscriptionRoutes = require('./subscriptions');
 const paymentCardRoutes = require('./paymentCards');
 
@@ -13,8 +15,9 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, '../../frontend')));
 
-app.use('/api/subscriptions', subscriptionRoutes);
-app.use('/api/payment-cards', paymentCardRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/subscriptions', authMiddleware, subscriptionRoutes);
+app.use('/api/payment-cards', authMiddleware, paymentCardRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

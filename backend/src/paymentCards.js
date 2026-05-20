@@ -33,7 +33,7 @@ const { validateCreateCard } = require('./validation');
  */
 router.get('/', async (req, res) => {
   try {
-    const cards = await paymentCardService.getAllCards();
+    const cards = await paymentCardService.getAllCards(req.userId);
     res.json(cards);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -69,7 +69,7 @@ router.post('/', (req, res, next) => {
   next();
 }, async (req, res) => {
   try {
-    const card = await paymentCardService.createCard(req.body);
+    const card = await paymentCardService.createCard(req.userId, req.body);
     res.status(201).json(card);
   } catch (err) {
     res.status(500).json({ error: 'Server error' });
@@ -98,7 +98,7 @@ router.post('/', (req, res, next) => {
  */
 router.delete('/:id', async (req, res) => {
   try {
-    await paymentCardService.deleteCard(parseInt(req.params.id, 10));
+    await paymentCardService.deleteCard(parseInt(req.params.id, 10), req.userId);
     res.status(204).end();
   } catch (err) {
     if (err.statusCode) {
